@@ -12,8 +12,9 @@ torch.manual_seed(42)
 def main():
     lit_model = LitModel(resnet34(num_classes=176))
     data = MyDataModule()
-    logger = pl.loggers.TensorBoardLogger("training/logs")
-    trainer = pl.Trainer(gpus=1)
+    logger = pl.loggers.WandbLogger(project="kaggle_leaves")
+    logger.watch(lit_model)
+    trainer = pl.Trainer(gpus=1, logger=logger)
 
     # pylint: disable=no-member
     trainer.tune(
