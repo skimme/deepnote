@@ -7,7 +7,7 @@ from torchvision import transforms
 import torch
 
 PATH_DATASETS = Path("D:/xxd/classify-leaves")
-BATCH_SIZE = 32
+BATCH_SIZE = 48
 
 class MyDataModule(pl.LightningDataModule):
     def __init__(self, data_dir: str = PATH_DATASETS, batch_size: int = BATCH_SIZE):

@@ -3,13 +3,13 @@ from lit_model import LitModel
 import numpy as np
 import torch
 import pytorch_lightning as pl
-from model import AlexNet
+from model import AlexNet, resnet34
 
 np.random.seed(42)
 torch.manual_seed(42)
 
 def main():
-    lit_model = LitModel(AlexNet(num_classes=176, init_weights=False))
+    lit_model = LitModel(resnet34(num_classes=176))
     data = MyDataModule()
     logger = pl.loggers.TensorBoardLogger("training/logs")
     trainer = pl.Trainer(gpus=1)
