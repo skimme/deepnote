@@ -42,9 +42,15 @@ class LitModel(pl.LightningModule):
         if self.one_cycle_max_lr is None:
             return optimizer
         scheduler = torch.optim.lr_scheduler.OneCycleLR(
-            optimizer=optimizer, max_lr=self.one_cycle_max_lr, total_steps=self.one_cycle_total_steps
+            optimizer=optimizer,
+            max_lr=self.one_cycle_max_lr,
+            total_steps=self.one_cycle_total_steps,
         )
-        return {"optimizer": optimizer, "lr_scheduler": scheduler, "monitor": "val_loss"}
+        return {
+            "optimizer": optimizer,
+            "lr_scheduler": scheduler,
+            "monitor": "val_loss",
+        }
 
     def training_step(self, batch, batch_idx):
         x, y = batch

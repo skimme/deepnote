@@ -9,19 +9,29 @@ import torch
 PATH_DATASETS = Path("D:/xxd/classify-leaves")
 BATCH_SIZE = 48
 
+
 class MyDataModule(pl.LightningDataModule):
     def __init__(self, data_dir: str = PATH_DATASETS, batch_size: int = BATCH_SIZE):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.data_transforms = {
-            "train": transforms.Compose([transforms.RandomResizedCrop(224), 
-                                        transforms.RandomHorizontalFlip(),
-                                        transforms.ToTensor(), 
-                                        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]),
-            "val": transforms.Compose([transforms.Resize((224, 224)),
-                                    transforms.ToTensor(), 
-                                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])}
+            "train": transforms.Compose(
+                [
+                    transforms.RandomResizedCrop(224),
+                    transforms.RandomHorizontalFlip(),
+                    transforms.ToTensor(),
+                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                ]
+            ),
+            "val": transforms.Compose(
+                [
+                    transforms.Resize((224, 224)),
+                    transforms.ToTensor(),
+                    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                ]
+            ),
+        }
 
     def setup(self, stage: Optional[str] = None):
         leaves_data = pd.read_csv(self.data_dir / "train.csv")
@@ -38,11 +48,19 @@ class MyDataModule(pl.LightningDataModule):
         val_data = leaves_data.iloc[train_num:]
         val_data = val_data.reset_index(drop=True)
 
-        self.train_dataset = Mydataset(train_data, self.data_dir, transform=self.data_transforms["train"])
-        self.val_dataset = Mydataset(val_data, self.data_dir, transform=self.data_transforms["val"])
+        self.train_dataset = Mydataset(
+            train_data, self.data_dir, transform=self.data_transforms["train"]
+        )
+        self.val_dataset = Mydataset(
+            val_data, self.data_dir, transform=self.data_transforms["val"]
+        )
 
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=0)
+        return torch.utils.data.DataLoader(
+            self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=0
+        )
 
     def val_dataloader(self):
-        return torch.utils.data.DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=0)
+        return torch.utils.data.DataLoader(
+            self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=0
+        )
