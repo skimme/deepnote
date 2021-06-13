@@ -51,7 +51,7 @@ def main():
     data = MyDataModule(args)
     logger = pl.loggers.WandbLogger(project="kaggle_leaves")
     logger.watch(lit_model)
-    trainer = pl.Trainerfrom_argparse_args(args, logger=logger)
+    trainer = pl.Trainer.from_argparse_args(args, logger=logger)
 
     # pylint: disable=no-member
     trainer.tune(

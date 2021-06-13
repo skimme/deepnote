@@ -19,6 +19,7 @@ class MyDataModule(pl.LightningDataModule):
         self.args = vars(args) if args is not None else {}
         self.data_dir = Path(self.args.get("path_datasets", PATH_DATASETS))
         self.batch_size = self.args.get("batch_size", BATCH_SIZE)
+        self.num_workers = self.args.get("num_workers", NUM_WORKERS)
         self.data_transforms = {
             "train": transforms.Compose(
                 [
@@ -61,12 +62,18 @@ class MyDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=0
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
         )
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(
-            self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=0
+            self.val_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers,
         )
 
     @staticmethod
