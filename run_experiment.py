@@ -10,7 +10,11 @@ torch.manual_seed(42)
 
 
 def main():
-    lit_model = LitModel(resnet34(num_classes=176))
+    #lit_model = LitModel(resnet34(num_classes=176))
+    lit_model = LitModel.load_from_checkpoint(
+        "wandb/run-20210611_214552-1k0euswz/files/kaggle_leaves/1k0euswz/checkpoints/epoch=27-step=9659.ckpt",
+        model=resnet34(num_classes=176)
+    )
     data = MyDataModule()
     logger = pl.loggers.WandbLogger(project="kaggle_leaves")
     logger.watch(lit_model)

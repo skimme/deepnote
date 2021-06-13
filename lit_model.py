@@ -3,7 +3,7 @@ from torch import nn
 import torch
 from torch.optim import lr_scheduler
 
-LR = 1e-3
+LR = 3e-4
 
 
 class Accuracy(pl.metrics.Accuracy):
