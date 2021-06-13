@@ -43,7 +43,7 @@ def main():
 
     if args.load_checkpoint is not None:
         lit_model = LitModel.load_from_checkpoint(
-            args.load_checkpoint, model=resnet34(num_classes=176)
+            args.load_checkpoint, model=resnet34(num_classes=176), args=args
         )
     else:
         lit_model = LitModel(resnet34(num_classes=176), args=args)
