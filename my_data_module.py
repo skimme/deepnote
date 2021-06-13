@@ -5,16 +5,20 @@ from pathlib import Path
 from utils import Mydataset
 from torchvision import transforms
 import torch
+import argparse
 
-PATH_DATASETS = Path("D:/xxd/classify-leaves")
+PATH_DATASETS = "D:/xxd/classify-leaves"
 BATCH_SIZE = 32
+NUM_WORKERS = 0
 
 
 class MyDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir: str = PATH_DATASETS, batch_size: int = BATCH_SIZE):
+    def __init__(self, args: argparse.Namespace = None):
         super().__init__()
-        self.data_dir = data_dir
-        self.batch_size = batch_size
+        self.data_dir = PATH_DATASETS
+        self.args = vars(args) if args is not None else {}
+        self.data_dir = Path(self.args.get("path_datasets", PATH_DATASETS))
+        self.batch_size = self.args.get("batch_size", BATCH_SIZE)
         self.data_transforms = {
             "train": transforms.Compose(
                 [
@@ -64,3 +68,22 @@ class MyDataModule(pl.LightningDataModule):
         return torch.utils.data.DataLoader(
             self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=0
         )
+
+    @staticmethod
+    def add_to_argparse(parser):
+        parser.add_argument(
+            "--batch_size",
+            type=int,
+            default=BATCH_SIZE,
+            help="Number of examples to operate on per forward step.",
+        )
+        parser.add_argument(
+            "--num_workers",
+            type=int,
+            default=NUM_WORKERS,
+            help="Number of additional processes to load data.",
+        )
+        parser.add_argument(
+            "--path_datasets", type=str, default=PATH_DATASETS, help="Path of datasets."
+        )
+        return parser

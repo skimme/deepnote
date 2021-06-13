@@ -2,8 +2,12 @@ import pytorch_lightning as pl
 from torch import nn
 import torch
 from torch.optim import lr_scheduler
+import argparse
+
 
 LR = 3e-4
+OPTIMIZER = "Adam"
+ONE_CYCLE_TOTAL_STEPS = 100
 
 
 class Accuracy(pl.metrics.Accuracy):
@@ -23,16 +27,20 @@ class Accuracy(pl.metrics.Accuracy):
 
 
 class LitModel(pl.LightningModule):
-    def __init__(self, model):
+    def __init__(self, model, args: argparse.Namespace = None):
         super().__init__()
         self.model = model
+        self.args = vars(args) if args is not None else {}
         self.loss_fn = nn.CrossEntropyLoss()
         self.train_acc = Accuracy()
         self.val_acc = Accuracy()
-        self.optimizer_class = torch.optim.Adam
-        self.lr = LR
-        self.one_cycle_max_lr = None
-        self.one_cycle_total_steps = 100
+        optimizer = self.args.get("optimizer", OPTIMIZER)
+        self.optimizer_class = getattr(torch.optim, optimizer)
+        self.lr = self.args.get("lr", LR)
+        self.one_cycle_max_lr = self.args.get("one_cycle_max_lr", None)
+        self.one_cycle_total_steps = self.args.get(
+            "one_cycle_total_steps", ONE_CYCLE_TOTAL_STEPS
+        )
 
     def forward(self, x):
         return self.model(x)
@@ -68,3 +76,18 @@ class LitModel(pl.LightningModule):
         self.log("val_loss", loss, prog_bar=True)
         self.val_acc(logits, y)
         self.log("val_acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
+
+    @staticmethod
+    def add_to_argparse(parser):
+        parser.add_argument(
+            "--optimizer",
+            type=str,
+            default=OPTIMIZER,
+            help="optimizer class from torch.optim",
+        )
+        parser.add_argument("--lr", type=float, default=LR)
+        parser.add_argument("--one_cycle_max_lr", type=float, default=None)
+        parser.add_argument(
+            "--one_cycle_total_steps", type=int, default=ONE_CYCLE_TOTAL_STEPS
+        )
+        return parser
