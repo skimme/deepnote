@@ -46,7 +46,7 @@ def main():
             args.load_checkpoint, model=resnet34(num_classes=176)
         )
     else:
-        lit_model = LitModel(resnet34(num_classes=176))
+        lit_model = LitModel(resnet34(num_classes=176), args=args)
 
     data = MyDataModule(args)
     logger = pl.loggers.WandbLogger(project="kaggle_leaves")
