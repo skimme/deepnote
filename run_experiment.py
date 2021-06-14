@@ -66,14 +66,20 @@ def main():
     logger = pl.loggers.WandbLogger(project="kaggle_leaves")
     logger.watch(lit_model)
     logger.log_hyperparams(vars(args))
-    
-    early_stopping_callback = pl.callbacks.EarlyStopping(monitor="val_loss", mode="min", patience=10)
+
+    early_stopping_callback = pl.callbacks.EarlyStopping(
+        monitor="val_loss", mode="min", patience=10
+    )
     model_checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        filename="{epoch:03d}-{val_loss:.3f}-{val_cer:.3f}", monitor="val_loss", mode="min"
+        filename="{epoch:03d}-{val_loss:.3f}-{val_cer:.3f}",
+        monitor="val_loss",
+        mode="min",
     )
     callbacks = [early_stopping_callback, model_checkpoint_callback]
 
-    trainer = pl.Trainer.from_argparse_args(args, callbacks=callbacks, logger=logger, weights_save_path="training/logs")
+    trainer = pl.Trainer.from_argparse_args(
+        args, callbacks=callbacks, logger=logger, weights_save_path="training/logs"
+    )
 
     # pylint: disable=no-member
     trainer.tune(
